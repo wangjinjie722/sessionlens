@@ -156,7 +156,7 @@ class Files(unittest.TestCase):
         out = self.root / "report.json"
         with contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(main(["watch", "--once", "--path", str(p), "--format", "json", "--output", str(out)]), 0)
-        self.assertEqual(len(json.loads(out.read_text())["sessions"]), 1)
+        self.assertEqual(len(json.loads(out.read_text(encoding="utf-8"))["sessions"]), 1)
 
     def test_preview_does_not_send(self):
         p = self.transcript([message("user", "password=supersecret")])
@@ -212,6 +212,10 @@ class Diagnostics(unittest.TestCase):
         cleaned = redact(raw)
         for value in ("keep-this-secret", "hunter2", "sk-abcdefghijklmnopqrstuvwxyz", "test@example.com", "\x1b"):
             self.assertNotIn(value, cleaned)
+
+    def test_redaction_without_home_directory(self):
+        with patch("sessionlens.privacy.Path.home", side_effect=RuntimeError("missing home")):
+            self.assertNotIn("hunter2", redact("password=hunter2"))
 
     def test_html_escapes_untrusted_content(self):
         session = Session("codex", "test", events=[Event(1, "user", '<script>alert("x")</script>')])

@@ -6,14 +6,22 @@ _PATTERNS = [
     (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----", re.S), "[REDACTED PRIVATE KEY]"),
     (re.compile(r"\b(?:sk-[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9_]{15,}|github_pat_[A-Za-z0-9_]{15,}|AKIA[A-Z0-9]{16})\b"), "[REDACTED TOKEN]"),
     (re.compile(r"(?i)(bearer\s+)[A-Za-z0-9._~+/=-]{8,}"), r"\1[REDACTED]"),
-    (re.compile(r'''(?i)((?:[\w-]*(?:api[_-]?key|secret|password|access[_-]?token|auth[_-]?token))["']?\s*[:=]\s*)(?:"[^"\n]*"|'[^'\n]*'|[^\s,;}]+)'''), r"\1[REDACTED]"),
+    (re.compile(r'''(?i)(\b(?:[\w-]*(?:api[_-]?key|secret|password|access[_-]?token|auth[_-]?token))["']?\s*[:=]\s*)(?:"[^"\n]*"|'[^'\n]*'|[^\s,;}]+)'''), r"\1[REDACTED]"),
     (re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"), "[REDACTED EMAIL]"),
     (re.compile(r"(?i)(https?://)[^\s/@:]+:[^\s/@]+@"), r"\1[REDACTED]@"),
 ]
 
 
 def redact(text: str) -> str:
-    text = str(text).replace(str(Path.home()), "~")
+    text = str(text)
+    try:
+        home = str(Path.home())
+        for representation in (home.replace("\\", "\\\\"), home.replace("\\", "/"), home):
+            text = text.replace(representation, "~")
+    except RuntimeError:
+        # Windows service/test environments may omit USERPROFILE/HOMEDRIVE.
+        # Credential masking must still work when a home directory is unknown.
+        pass
     for pattern, replacement in _PATTERNS:
         text = pattern.sub(replacement, text)
     # Keep untrusted log text from emitting terminal control sequences.
