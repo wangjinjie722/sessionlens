@@ -270,11 +270,19 @@ class ModelReview(unittest.TestCase):
         def open_request(req, timeout):
             captured.append(json.loads(req.data))
             return Response(json.dumps(wire).encode())
-        with patch.dict(os.environ, {"SESSIONLENS_BASE_URL": "http://localhost:8000/v1", "SESSIONLENS_MODEL": "test"}, clear=True), patch("urllib.request.OpenerDirector.open", side_effect=open_request):
+        # Preserve Windows SystemRoot / OpenSSL environment during transport
+        # construction; clearing OS variables can break SSL initialization.
+        with patch.dict(os.environ, {"SESSIONLENS_BASE_URL": "http://localhost:8000/v1", "SESSIONLENS_MODEL": "test", "SESSIONLENS_API_KEY": ""}), patch("urllib.request.OpenerDirector.open", side_effect=open_request):
             value = review(s, {"findings": []}, None)
         self.assertEqual(value["findings"][0]["evidence_lines"], [1])
         self.assertNotIn("password=secret", json.dumps(captured))
         self.assertEqual(captured[0]["response_format"], {"type": "json_object"})
+
+    def test_transport_initialization_error_is_recoverable(self):
+        s = Session("codex", "test", events=[Event(1, "user", "hi")])
+        with patch.dict(os.environ, {"SESSIONLENS_BASE_URL": "http://localhost:8000/v1", "SESSIONLENS_MODEL": "test"}), patch("urllib.request.build_opener", side_effect=OSError("SSL failed")):
+            with self.assertRaisesRegex(ValueError, "request failed"):
+                review(s, {"findings": []}, None)
 
 
 if __name__ == "__main__":

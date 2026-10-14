@@ -85,8 +85,8 @@ def review(session: Session, item: dict, model: str | None, language: str = "zh"
     if key:
         headers["Authorization"] = "Bearer " + key
     request = urllib.request.Request(base + "/chat/completions", json.dumps(payload).encode(), headers)
-    opener = urllib.request.build_opener(NoRedirect)
     try:
+        opener = urllib.request.build_opener(NoRedirect)
         with opener.open(request, timeout=45) as response:
             raw = response.read(1024 * 1024 + 1)
             if len(raw) > 1024 * 1024:
