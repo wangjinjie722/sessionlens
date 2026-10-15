@@ -20,7 +20,7 @@ def positive(value: str) -> int:
 
 
 def parser() -> argparse.ArgumentParser:
-    app = argparse.ArgumentParser(description="Automatically diagnose local Codex and Claude Code sessions. 默认本地分析，不上传会话。")
+    app = argparse.ArgumentParser(description="Automatically diagnose local Codex and Claude Code sessions. Local analysis by default; no session uploads.")
     app.add_argument("--version", action="version", version=__version__)
     sub = app.add_subparsers(dest="command")
     for command, help_text in [("scan", "Analyze recent local sessions (default)"), ("watch", "Watch for new or changed sessions; Ctrl+C stops"), ("list", "List discovered sessions without reading their contents")]:
@@ -37,7 +37,7 @@ def parser() -> argparse.ArgumentParser:
             p.add_argument("--deep", action="store_true", help="Send redacted selected excerpts to the configured model endpoint (opt-in)")
             p.add_argument("--model", help="Model name for --deep, or set SESSIONLENS_MODEL")
             p.add_argument("--deep-limit", type=positive, default=3, help="Maximum model calls (default: 3)")
-            p.add_argument("--language", choices=["zh", "en"], default="zh", help="Model review language")
+            p.add_argument("--language", choices=["en", "zh"], default="en", help="Model review language")
             p.add_argument("--preview-deep", action="store_true", help="Print the exact selected/redacted event contexts without sending them")
         else:
             p.add_argument("--interval", type=positive, default=10, help="Seconds between scans (default: 10)")

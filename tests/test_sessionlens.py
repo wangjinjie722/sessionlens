@@ -43,7 +43,7 @@ class Files(unittest.TestCase):
         return path
 
     def test_codex_retry_and_correction(self):
-        p = self.transcript([message("user", "Fix this"), call("a"), result("a", 2), call("b"), result("b", 2), message("user", "你没有按要求先检查文件")])
+        p = self.transcript([message("user", "Fix this"), call("a"), result("a", 2), call("b"), result("b", 2), message("user", "\u4f60\u6ca1\u6709\u6309\u8981\u6c42\u5148\u68c0\u67e5\u6587\u4ef6")])
         data = analyze(parse(p))
         self.assertEqual(data["source"], "codex")
         self.assertEqual(data["stats"]["unchanged_failed_retries"], 1)

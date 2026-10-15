@@ -1,15 +1,15 @@
 # SessionLens
 
-**自动读取真实 Agent 会话，诊断问题、评分，并给出带证据的优化建议。**
+**Automatically diagnose real agent sessions, score observable behavior, and get evidence-linked optimization advice.**
 
 Local-first diagnostics for Codex and Claude Code sessions. Install once, run from your terminal, and inspect where your agent gets stuck—without exporting or uploading history.
 
-- **自动发现**：读取本机 Codex / Claude Code JSONL session，无需手动导入。
-- **有证据的诊断**：每条发现附原文件行号、事件片段、原因假设和建议。
-- **透明评分**：工具可靠性、失败重试、上下文输出体积；不把过程分冒充任务成功率。
-- **持续观察**：`watch` 自动分析新增或变化的会话，更新报告。
-- **可选深度诊断**：通过明确开启的模型调用提供针对当前任务的建议；支持兼容 Chat Completions 的本地或远程服务。
-- **本地优先**：默认零网络请求、零运行时第三方依赖；不会修改 agent 配置或执行日志中的命令。
+- **Automatic discovery**: read local Codex and Claude Code JSONL sessions without manual imports.
+- **Evidence-linked diagnostics**: every finding includes source line numbers, excerpts, a hypothesis, and actionable advice.
+- **Transparent scoring**: measure tool reliability, failed retries, and output size without claiming to measure task success.
+- **Continuous monitoring**: `watch` analyzes new or changed sessions and updates the report.
+- **Optional deep review**: opt in to task-specific model advice through a local or remote Chat Completions compatible endpoint.
+- **Local first**: no network requests by default and no third-party runtime dependencies; never modifies agent settings or executes logged commands.
 
 ## Install
 
@@ -76,13 +76,13 @@ sessionlens scan --path /path/to/session.jsonl
 The bundled synthetic demo includes an unchanged retry after a missing-parameter error and a user correction:
 
 ```text
-[codex] 52/100 · 修复订单查询接口。先检查现有实现，不要修改支付模块。
+[codex] 52/100 · Fix the order lookup API. Inspect the existing implementation first. Do not change the payment module.
   Coverage: limited | Task success: unknown | Tools: 3
-  [HIGH] Unchanged retry after failure / 失败后原样重试 ×1
+  [HIGH] Unchanged retry after failure ×1
     L4 exec_command: Process exited with code 2 ... Missing required parameter
     L5 exec_command: {"cmd": "python lookup_order.py --order 123"}
-  [MEDIUM] Tool execution failures / 工具执行失败 ×2
-  [MEDIUM] Possible user corrections / 疑似用户纠正 ×1
+  [MEDIUM] Tool execution failures ×2
+  [MEDIUM] Possible user corrections ×1
 ```
 
 Each report separates **observations**, **root-cause hypotheses**, **suggestions**, and **candidate instructions**. Candidate instructions are suggestions to review and test, not automatically applied patches. Cross-session aggregation currently groups rule categories, not semantic root causes.
@@ -117,7 +117,7 @@ A local compatible service can use `SESSIONLENS_BASE_URL=http://localhost:11434/
 
 `--deep` sends **selected, best-effort redacted excerpts** to that endpoint, up to three sessions by default (`--deep-limit`). The model gets the initial task, recent events, and finding neighborhoods within a 24,000-character event budget. It does not get complete session history, files, credentials from agent config, hidden reasoning, or tool execution access. Returned citations must refer to supplied lines. The model may still misinterpret valid evidence; its suggestions are marked unverified. Deep analysis does not alter the deterministic score.
 
-Use `--language en` for English model advice (default: Chinese). Use `--preview-deep` before sending sensitive sessions. Secret masking is not exhaustive; business content and personal information may remain. The fixed system prompt and payload construction are in [llm.py](src/sessionlens/llm.py).
+Model advice defaults to English. Use `--language zh` to request Chinese advice. Use `--preview-deep` before sending sensitive sessions. Secret masking is not exhaustive; business content and personal information may remain. The fixed system prompt and payload construction are in [llm.py](src/sessionlens/llm.py).
 
 ## Session sources
 

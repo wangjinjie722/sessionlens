@@ -9,28 +9,28 @@ from .privacy import excerpt, redact
 
 RULES = {
     "tool_failure": {
-        "title": "Tool execution failures / 工具执行失败",
+        "title": "Tool execution failures",
         "severity": "medium",
         "hypothesis": "Inputs, environment, or tool contracts may need attention. Some failures are expected probes or failing tests.",
         "suggestion": "Inspect the first failing result. Check required inputs and environment before retrying; distinguish expected nonzero exits from execution failures.",
         "candidate_instruction": "When a tool fails, inspect its error and verify the relevant input or precondition before retrying. Treat expected diagnostic failures separately.",
     },
     "failed_retry": {
-        "title": "Unchanged retry after failure / 失败后原样重试",
+        "title": "Unchanged retry after failure",
         "severity": "high",
         "hypothesis": "The agent may be retrying without incorporating failure feedback. Transient failures can justify a bounded retry.",
         "suggestion": "Add a retry budget. For deterministic errors, change inputs or repair the precondition; for transient errors, use bounded backoff.",
         "candidate_instruction": "Do not repeat an identical failed tool call without checking whether the failure is transient. For deterministic failures, correct the cause first; stop and explain when the retry budget is exhausted.",
     },
     "user_correction": {
-        "title": "Possible user corrections / 疑似用户纠正",
+        "title": "Possible user corrections",
         "severity": "medium",
         "hypothesis": "A user may be restating a missed requirement, but could also be introducing a new requirement or quoting someone else.",
         "suggestion": "Review the cited user messages against the preceding request. Add only confirmed recurring constraints to the project instructions.",
         "candidate_instruction": "Before acting, identify the user's explicit constraints. When corrected, update the plan and check that subsequent actions follow the corrected requirement.",
     },
     "large_output": {
-        "title": "Large tool outputs / 工具输出过长",
+        "title": "Large tool outputs",
         "severity": "low",
         "hypothesis": "Large outputs may crowd out useful context. Transcript length is not proof that the model consumed the entire output.",
         "suggestion": "Use targeted searches, bounded reads, and output limits. Retain file references so details can be retrieved when needed.",
@@ -39,7 +39,7 @@ RULES = {
 }
 
 CORRECTION = re.compile(
-    r"(?:你(?:又|还是|仍然|没有|没按)|我(?:刚才|之前|已经)说|不是这个意思|理解错了|不要再|说了不要|我要的是|"
+    r"(?:\u4f60(?:\u53c8|\u8fd8\u662f|\u4ecd\u7136|\u6ca1\u6709|\u6ca1\u6309)|\u6211(?:\u521a\u624d|\u4e4b\u524d|\u5df2\u7ecf)\u8bf4|\u4e0d\u662f\u8fd9\u4e2a\u610f\u601d|\u7406\u89e3\u9519\u4e86|\u4e0d\u8981\u518d|\u8bf4\u4e86\u4e0d\u8981|\u6211\u8981\u7684\u662f|"
     r"\b(?:that's not what i|that is not what i|i (?:already|explicitly) (?:said|asked)|you (?:ignored|misunderstood)|stop (?:doing|repeating)|do not do that again)\b)", re.I
 )
 
@@ -111,7 +111,7 @@ def analyze(session: Session) -> dict:
         "project": redact(session.cwd),
         "title": excerpt(users[0].text, 100) if users else "Session without a visible user task",
         "score": score,
-        "score_label": "Observed process quality / 可观察过程质量",
+        "score_label": "Observed process quality",
         "score_version": "heuristic-v1",
         "task_success": "unknown",
         "coverage": "limited" if session.truncated or session.malformed or len(results) < 5 or matched < len(results) else "observed-tool-events",

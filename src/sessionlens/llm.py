@@ -77,7 +77,7 @@ def settings(model: str | None = None) -> tuple[str, str, str]:
     return base, key, model
 
 
-def review(session: Session, item: dict, model: str | None, language: str = "zh") -> dict:
+def review(session: Session, item: dict, model: str | None, language: str = "en") -> dict:
     base, key, model = settings(model)
     context = select_context(session, item)
     payload = {"model": model, "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": json.dumps({"language": language, "partial_transcript": True, "events": context}, ensure_ascii=False)}], "response_format": {"type": "json_object"}}
