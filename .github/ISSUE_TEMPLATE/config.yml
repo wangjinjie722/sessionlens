@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Installation and usage
+    url: https://github.com/wangjinjie722/sessionlens#try-it-without-installing-permanently
+    about: Start with the synthetic demo and automatic session discovery.
+  - name: Privacy and data handling
+    url: https://github.com/wangjinjie722/sessionlens/blob/main/docs/privacy.md
+    about: Understand local analysis and opt-in model review before sharing any data.

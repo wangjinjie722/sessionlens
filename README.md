@@ -1,8 +1,34 @@
 # SessionLens
 
-**Automatically diagnose real agent sessions, score observable behavior, and get evidence-linked optimization advice.**
+**Find repeated mistakes in your Codex and Claude Code sessions—locally.**
 
 Local-first diagnostics for Codex and Claude Code sessions. Install once, run from your terminal, and inspect where your agent gets stuck—without exporting or uploading history.
+
+No account. No API key for local diagnostics. No session uploads by default.
+
+![A synthetic SessionLens report showing an unchanged failed retry, source evidence, and an unverified optimization suggestion](docs/assets/report-preview.png)
+
+[Watch the 25-second demo](docs/assets/demo.mp4) · [Animated walkthrough](docs/assets/demo.gif) · [Share trial feedback](https://github.com/wangjinjie722/sessionlens/issues/new?template=trial-feedback.yml)
+
+*The preview uses a bundled synthetic session. Scores describe observed process signals, not task success. Suggestions have not been replay-tested.*
+
+## Try it without installing permanently
+
+With **Python 3.10+, Git, and [uv](https://docs.astral.sh/uv/)** available, run the synthetic demo without reading your history:
+
+```sh
+uvx --from git+https://github.com/wangjinjie722/sessionlens.git@v0.1.1 sessionlens demo
+```
+
+Then inspect your five most recently modified local sessions:
+
+```sh
+uvx --from git+https://github.com/wangjinjie722/sessionlens.git@v0.1.1 sessionlens scan --limit 5
+```
+
+The first run downloads the tool and build dependencies. Session analysis itself stays local. No Git? Install the wheel from [Releases](https://github.com/wangjinjie722/sessionlens/releases/latest) with pipx or pip.
+
+## What it finds
 
 - **Automatic discovery**: read local Codex and Claude Code JSONL sessions without manual imports.
 - **Evidence-linked diagnostics**: every finding includes source line numbers, excerpts, a hypothesis, and actionable advice.
@@ -164,3 +190,15 @@ Implemented: automatic discovery, local diagnostics, transparent scores, evidenc
 Not implemented: arbitrary agent SDK ingestion, causal root-cause proof, automatic harness edits, sandbox task replay, A/B validation, GEPA integration, business-task success scoring. These require task-specific evaluators and replay adapters; historical logs alone do not establish that a suggested fix works.
 
 MIT licensed.
+
+## Help shape the next version
+
+After trying your own sessions, [send a short report](https://github.com/wangjinjie722/sessionlens/issues/new?template=trial-feedback.yml):
+
+1. Did automatic discovery find your sessions?
+2. Which finding was useful or incorrect?
+3. Did you change anything after reading the advice?
+
+There is no usage telemetry. Feedback is voluntary; never attach private transcripts or unreviewed reports. For installation failures, [open an installation issue](https://github.com/wangjinjie722/sessionlens/issues/new?template=installation.yml).
+
+Demo reproduction steps and ready-to-edit launch drafts are in the [launch kit](docs/launch-kit.md).

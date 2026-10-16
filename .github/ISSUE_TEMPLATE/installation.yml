@@ -1,0 +1,27 @@
+name: Installation or discovery problem
+description: Report a failure to install, start, or find local sessions.
+title: "[Setup] "
+body:
+  - type: markdown
+    attributes:
+      value: "Share only the relevant error. Remove usernames, private paths, tokens, and transcript content."
+  - type: input
+    id: environment
+    attributes:
+      label: OS, Python version, and SessionLens version
+      placeholder: "macOS, Python 3.12, SessionLens 0.1.1"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Command and result
+      description: Include the install method and a sanitized error message.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
